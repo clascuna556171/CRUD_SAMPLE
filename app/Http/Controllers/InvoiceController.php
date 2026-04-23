@@ -2,64 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
+use App\Models\Appointment;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $invoices = \App\Models\Invoice::with('appointment.patient')->get();
+        $invoices = Invoice::with(['appointment.patient', 'appointment.doctor'])->get();
         return view('invoices.index', compact('invoices'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        $invoice = Invoice::with(['appointment.patient', 'appointment.doctor'])->findOrFail($id);
+        return view('invoices.show', compact('invoice'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        $invoice = Invoice::findOrFail($id);
+        $invoice->delete();
+        return redirect()->route('invoices.index')->with('success', 'Invoice deleted.');
     }
 }

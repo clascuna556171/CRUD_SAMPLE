@@ -3,63 +3,84 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Appointment;
+use App\Models\Patient;
+use App\Models\Staff;
+use App\Models\Schedule;
 
 class AppointmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $appointments = \App\Models\Appointment::with(['patient', 'doctor', 'schedule'])->get();
+        $appointments = Appointment::with(['patient', 'doctor', 'schedule.department'])->get();
         return view('appointments.index', compact('appointments'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $patients = Patient::all();
+        $doctors = Staff::where('role', 'Doctor')->get();
+        $schedules = Schedule::with('department')->get();
+        return view('appointments.create', compact('patients', 'doctors', 'schedules'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'patient_id' => 'required|exists:patients,patient_id',
+            'schedule_id' => 'required|exists:schedules,schedule_id',
+            'assigned_doctor_id' => 'required|exists:staff,staff_id',
+        ]);
+
+        // Generate a unique reference number
+        $ref = 'APP-' . strtoupper(uniqid());
+
+        Appointment::create([
+            'reference_number' => $ref,
+            'patient_id' => $request->patient_id,
+            'schedule_id' => $request->schedule_id,
+            'assigned_doctor_id' => $request->assigned_doctor_id,
+            'status' => 'Pending'
+        ]);
+
+        return redirect()->route('appointments.index')->with('success', 'Appointment booked successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $patients = Patient::all();
+        $doctors = Staff::where('role', 'Doctor')->get();
+        $schedules = Schedule::with('department')->get();
+
+        return view('appointments.edit', compact('appointment', 'patients', 'doctors', 'schedules'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'patient_id' => 'required|exists:patients,patient_id',
+            'schedule_id' => 'required|exists:schedules,schedule_id',
+            'assigned_doctor_id' => 'required|exists:staff,staff_id',
+            'status' => 'required|in:Pending,Confirmed,Completed,Cancelled',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+        $appointment->update($request->all());
+
+        return redirect()->route('appointments.index')->with('success', 'Appointment updated successfully!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function show($id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        return view('appointments.show', compact('appointment'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $appointment = Appointment::findOrFail($id);
+        $appointment->delete();
+        return redirect()->route('appointments.index')->with('success', 'Appointment removed.');
     }
 }

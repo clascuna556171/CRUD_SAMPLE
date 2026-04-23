@@ -2,64 +2,69 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Schedule;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $schedules = \App\Models\Schedule::with('department')->get();
+        $schedules = Schedule::with('department')->get();
         return view('schedules.index', compact('schedules'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $departments = Department::all();
+        return view('schedules.create', compact('departments'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'department_id' => 'required|exists:departments,department_id',
+            'schedule_date' => 'required|date|after_or_equal:today',
+            'max_capacity' => 'required|integer|min:1',
+        ]);
+
+        Schedule::create($request->all());
+
+        return redirect()->route('schedules.index')->with('success', 'Schedule created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        $schedule = Schedule::findOrFail($id);
+        $departments = Department::all();
+        
+        return view('schedules.edit', compact('schedule', 'departments'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'department_id' => 'required|exists:departments,department_id',
+            'schedule_date' => 'required|date|after_or_equal:today',
+            'max_capacity' => 'required|integer|min:1',
+        ]);
+
+        $schedule = Schedule::findOrFail($id);
+        $schedule->update($request->all());
+
+        return redirect()->route('schedules.index')->with('success', 'Schedule updated successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function show($id)
     {
-        //
+        $schedule = Schedule::with('department')->findOrFail($id);
+        return view('schedules.show', compact('schedule'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $schedule = Schedule::findOrFail($id);
+        $schedule->delete();
+        return redirect()->route('schedules.index')->with('success', 'Schedule deleted.');
     }
 }

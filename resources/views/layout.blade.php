@@ -35,7 +35,6 @@
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     table, th, td { border: 1px solid #ccc; }
     th, td { padding: 10px; text-align: left; }
-    .btn { padding: 5px 10px; text-decoration: none; border: 1px solid #333; color: #333; background: #eee; border-radius: 3px; cursor: pointer; }
     .btn-primary { background: #007bff; color: white; border-color: #007bff; }
     .btn-danger { background: #dc3545; color: white; border-color: #dc3545; }
     .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
@@ -43,6 +42,45 @@
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; }
     .form-control { width: 100%; padding: 8px; box-sizing: border-box; }
+
+    .btn { 
+      display: inline-block; 
+      min-width: 40px;      
+      text-align: center;    
+      padding: 8px 15px;     
+      text-decoration: none; 
+      border: 1px solid #ccc;
+      color: #333; 
+      background: #eee; 
+      border-radius: 4px;   
+      cursor: pointer; 
+      font-size: 14px;       
+      box-sizing: border-box; 
+      transition: 0.2s;
+      vertical-align: middle;
+    }
+
+    .btn-primary { 
+      background: #007bff !important; 
+      color: white !important; 
+      border-color: #0069d9 !important; 
+    }
+
+    .btn-danger { 
+      background: #dc3545 !important; 
+      color: white !important; 
+      border-color: #c82333 !important; 
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      filter: brightness(90%);
+      color: inherit; 
+    }
+
+    .btn-primary:hover, .btn-danger:hover {
+      color: white;
+    }
   </style>
 </head>
 <body>
