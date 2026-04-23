@@ -151,7 +151,13 @@ return new class extends Migration
             FROM departments D
             JOIN schedules Sch ON D.department_id = Sch.department_id
             LEFT JOIN appointments A ON Sch.schedule_id = A.schedule_id
-            GROUP BY D.department_id, Sch.schedule_id;
+            GROUP BY 
+                D.department_id, 
+                D.department_name, 
+                Sch.schedule_id, 
+                Sch.schedule_date, 
+                Sch.max_capacity, 
+                Sch.current_booked;
         ");
 
         // 3. NEW VIEW: Doctor Availability Finder
