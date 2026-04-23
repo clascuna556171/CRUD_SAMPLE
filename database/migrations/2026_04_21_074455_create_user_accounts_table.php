@@ -14,13 +14,22 @@ return new class extends Migration
         Schema::create('user_accounts', function (Blueprint $table) {
             $table->id('user_id');
             $table->string('email', 100)->unique();
-            $table->string('password_hash', 255);
+            $table->string('password', 255);
             $table->enum('role', ['Patient', 'Staff', 'Admin']);
-            $table->unsignedBigInteger('patient_id')->nullable();
-            $table->unsignedBigInteger('staff_id')->nullable();
+            
+            // Foreign Keys
+            $table->foreignId('patient_id')
+                  ->nullable()
+                  ->constrained('patients', 'patient_id')
+                  ->onDelete('cascade');
 
-            $table->foreign('patient_id')->references('patient_id')->on('patients')->onDelete('cascade');
-            $table->foreign('staff_id')->references('staff_id')->on('staff')->onDelete('cascade');
+            $table->foreignId('staff_id')
+                  ->nullable()
+                  ->constrained('staff', 'staff_id')
+                  ->onDelete('cascade');
+
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
 

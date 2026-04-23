@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('last_name', 50);
             $table->enum('role', ['Doctor', 'Nurse', 'Admissions Clerk', 'Admin'])->default('Admissions Clerk');
             $table->string('specialization', 100)->nullable();
-            $table->unsignedBigInteger('department_id')->nullable();
+            $table->foreignId('department_id')
+                  ->nullable()
+                  ->constrained('departments', 'department_id')
+                  ->onDelete('set null');
+            $table->timestamps();
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name', 50);
             $table->string('contact_number', 15);
             $table->text('medical_history')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

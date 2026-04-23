@@ -10,6 +10,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Drop existing triggers first to avoid "Trigger already exists" errors
+        DB::unprepared("DROP TRIGGER IF EXISTS after_appointment_insert");
+        DB::unprepared("DROP TRIGGER IF EXISTS before_appointment_insert");
+        DB::unprepared("DROP TRIGGER IF EXISTS after_appointment_complete");
+        DB::unprepared("DROP TRIGGER IF EXISTS after_appointment_cancel");
+        DB::unprepared("DROP VIEW IF EXISTS View_Appointment_Master_List");
+
         // 1. Trigger: Increment booked count
         DB::unprepared("
             CREATE TRIGGER after_appointment_insert

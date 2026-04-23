@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id('schedule_id');
-            $table->unsignedBigInteger('department_id');
+
+            // foreign key
+            $table->foreignId('department_id')
+                  ->constrained('departments', 'department_id')
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
             $table->date('schedule_date');
             $table->integer('max_capacity');
             $table->integer('current_booked')->default(0);
-
-            $table->foreign('department_id')->references('department_id')->on('departments')->onUpdate('cascade')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
